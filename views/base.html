@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <!-- <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link href="../static/js/bootstrap.min.css" rel="stylesheet" >
+
+    <title>Football League Commands</title>
+
+    <style>
+        /* .col { */
+            /* background-color: burlywood; */
+        /* } */
+
+        .jumbotron {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .list-group-item:hover {
+            /* color: white;
+            background-color: bisque; */
+            cursor: pointer;
+        }
+    </style>
+    <!-- jquery first, then popper.js, then bootstrap js -->
+    <!-- <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script> -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/vue.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Control Panel</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li id="home" class="nav-item">
+                    <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li id="players" class="nav-item">
+                    <a class="nav-link" href="/players">Players</a>
+                </li>
+                <li id="coaches" class="nav-item">
+                    <a class="nav-link" href="#">Coaches</a>
+                </li>
+                <li id="games" class="nav-item">
+                    <a class="nav-link" href="/games">Games</a>
+                </li>
+                <li id="clubs" class="nav-item">
+                    <a class="nav-link" href="#">Clubs</a>
+                </li>
+                <li id="seasons" class="nav-item">
+                    <a class="nav-link" href="/seasons">Seasons</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    {% block main %} {% endblock %}
+
+    <script>
+        // 获取当前网址
+        var log = console.log;
+        var url = document.location.toString();
+        var arr_url = url.split('//');
+
+        var start = arr_url[1].indexOf('/');
+        var rel_url = arr_url[1].substring(start);
+
+        log('rel_url: ' + rel_url);
+
+        var nav_urls = ['home', 'players', 'coaches', 'games', 'clubs', 'seasons'];
+
+        for(var nu of nav_urls) {
+            if(rel_url.indexOf(nu) != -1) {
+                $('#'+ nu).addClass('active');
+                break;
+            }
+        }
+
+
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <!-- <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> --> 
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

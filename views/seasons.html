@@ -1,0 +1,136 @@
+{% extends "base.html" %} {% block main %}
+
+<!-- 点击generate的时候会有一个弹出框来确认信息 -->
+
+<div class="container" id="seasons-list">
+    <!-- <div class="list-group">
+        <div class="list-group-item">
+            hello
+        </div>
+        <div class="list-group-item">
+            world
+        </div>
+        <div class="list-group-item">
+            haha
+        </div>
+    </div> -->
+    <!-- <div style="font-size: 16px;" class="list-group">
+        <div v-for="season in seasons" class="list-group-item list-group-item-action">
+            <div style="display: grid; grid-template-columns: 30% 30% 20% 20%; align-items: center;">
+            <span v-text="season.season_name"></span>
+            <span v-text="season.last"></span>
+            <span v-text="season.start"></span>
+            <button style="float: right; padding: 0;" class="btn btn-primary">Generate new season</button>
+            </div>
+        </div>
+    </div> -->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col-lg">#</th>
+                <th scope="col-lg-8">season name</th>
+                <th scope="col">begin at</th>
+                <th scope="col">end at</th>
+                <th scope="col">status</th>
+                <th scope="col">Generate new season</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(season, index) in seasons">
+                <th scope="row" v-text="index+1"></th>
+                <td v-text="season.season_name"></td>
+                <td v-text="season.beginAt"></td>
+                <td v-text="season.endAt"></td>
+                <td v-text="season.start"></td>
+                <td><button class="btn btn-primary execute-comfirm">Execute</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <button @click="addANewSeason" type="button" class="btn btn-primary" id="add-a-new-season">+</button> -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"
+        data-whatever="@getbootstrap">+</button>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Season</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">League:</label>
+                            <select class="form-control">
+                                <option value="default">Please choose a league</option>
+                                <option value="Premier League">Premier League</option>
+                                <option value="EFL Championship">EFL Championship</option>
+                            </select>
+                            <label class="col-form-label">2020/2021</label>
+                            <!-- <input type="text" class="form-control" id="recipient-name"> -->
+                            <!-- 开始的是下一个赛季，这个我们自己用js写，不给用户自由 -->
+                        </div>
+                        <div class="form-group">
+                            <!-- <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea> -->
+                            <label class="col-form-label">Begin At</label>
+                            <input type="date" name="begin_day" min="2019-01-01" max="2025-12-31" class="form-control">
+                            <label class="col-form-label">End At</label>
+                            <input type="date" name="end_day" min="2019-01-01" max="2025-12-31" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Done!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var vm = new Vue({
+            el: '#seasons-list',
+            data: {
+                // seasons: [{
+                //     season_name: 'balabala',
+                //     start_at: 'sda',
+                //     end_at: 'sad',
+                //     start: 'laa'
+                // }, {
+                //     season_name: 'blalabala',
+                //     start_at: 'sda',
+                //     end_at: 'sad',
+                //     start: 'aqwe'
+                // }]
+                seasons: []
+            },
+            computed: {
+
+            },
+            methods: {
+                addANewSeason: function () {
+                    alert('hello');
+                }
+            }
+        });
+
+        $.get('/fetch/seasons').done(function (data) {
+            vm.seasons = data.seasons;
+            console.log(vm.seasons);
+        });
+
+    });
+
+    $(document).on('click', '.execute-comfirm', function() {
+        // 我需要往game表里面插入数据了
+        // 看看之前写的生成新赛季的代码
+    });
+</script>
+
+{% endblock %}

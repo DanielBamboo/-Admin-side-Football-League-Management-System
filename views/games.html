@@ -1,0 +1,90 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <label>0921</label>
+        </div>
+        <div class="list-group card-body" style="padding: 0;">
+        <a class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
+            <span>Manchester United</span>
+            <span>---</span>
+            <span>Leicester City</span>
+        </a>
+        <a class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
+            <span>Manchester United</span>
+            <span>---</span>
+            <span>Leicester City</span>
+        </a>
+        <a class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
+            <span>Manchester United</span>
+            <span>---</span>
+            <span>Leicester City</span>
+        </a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <label>0921</label>
+        </div>
+        <div class="list-group card-body" style="padding: 0;">
+        <a class="list-group-item" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
+            <span>Manchester United</span>
+            <span>---</span>
+            <span>Leicester City</span>
+        </a>
+        <a class="list-group-item" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
+            <span>Manchester United</span>
+            <span>---</span>
+            <span>Leicester City</span>
+        </a>
+        <a class="list-group-item" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
+            <span>Manchester United</span>
+            <span>---</span>
+            <span>Leicester City</span>
+        </a>
+        </div>
+    </div>
+
+        <!-- <table class="table table-hover">
+            <tbody>
+                <tr>
+                    <th width="5%" scope="row">1</th>
+                    <td class="game-id">1</td>
+                    <td name="home-team" width="32.5%" class="home-team">Manchester United</td>
+                    <td width="25%" class="match-time">9:00</td>
+                    <td name="away-team" width="37.5%">Barcelona</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td class="game-id">2</td>
+                    <td name="home-team" class="home-team">Jacob</td>
+                    <td class="match-time">9:00</td>
+                    <td name="away-team">@fat</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td class="game-id">3</td>
+                    <td name="home-team" class="home-team">Larry</td>
+                    <td class="match-time">9:00</td>
+                    <td name="away-team">@twitter</td>
+                </tr>
+            </tbody>
+        </table> -->
+</div>
+
+
+<script>
+$(function() {
+    $('tr').click(function() {
+        console.log('click-a-tr');
+        var name = $(this).find('td[class=game-id]').text() + '-' + $(this).find('td[name=home-team]').text() + '-vs-' +
+            $(this).find('td[name=away-team]').text();
+        name = name.replace(' ', '_');
+        
+        $.get('/edit-game/' + name);
+    });
+
+    $('.game-id').hide();
+});
+</script>
+{% endblock %}
