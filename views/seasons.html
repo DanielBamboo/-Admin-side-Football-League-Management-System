@@ -39,10 +39,10 @@
             <tr v-for="(season, index) in seasons">
                 <th scope="row" v-text="index+1"></th>
                 <td v-text="season.season_name"></td>
-                <td v-text="season.beginAt"></td>
-                <td v-text="season.endAt"></td>
+                <td name="beginAt" v-text="season.beginAt"></td>
+                <td name="endAt" v-text="season.endAt"></td>
                 <td v-text="season.start"></td>
-                <td><button class="btn btn-primary execute-comfirm">Execute</button></td>
+                <td><button :season_index_in_vue="index" class="btn btn-primary execute-comfirm">Execute</button></td>
             </tr>
         </tbody>
     </table>
@@ -93,32 +93,33 @@
 </div>
 
 <script>
-    $(function () {
-        var vm = new Vue({
-            el: '#seasons-list',
-            data: {
-                // seasons: [{
-                //     season_name: 'balabala',
-                //     start_at: 'sda',
-                //     end_at: 'sad',
-                //     start: 'laa'
-                // }, {
-                //     season_name: 'blalabala',
-                //     start_at: 'sda',
-                //     end_at: 'sad',
-                //     start: 'aqwe'
-                // }]
-                seasons: []
-            },
-            computed: {
+    var vm = new Vue({
+        el: '#seasons-list',
+        data: {
+            // seasons: [{
+            //     season_name: 'balabala',
+            //     start_at: 'sda',
+            //     end_at: 'sad',
+            //     start: 'laa'
+            // }, {
+            //     season_name: 'blalabala',
+            //     start_at: 'sda',
+            //     end_at: 'sad',
+            //     start: 'aqwe'
+            // }]
+            seasons: []
+        },
+        computed: {
 
-            },
-            methods: {
-                addANewSeason: function () {
-                    alert('hello');
-                }
+        },
+        methods: {
+            addANewSeason: function () {
+                alert('hello');
             }
-        });
+        }
+    });
+    $(function () {
+
 
         $.get('/fetch/seasons').done(function (data) {
             vm.seasons = data.seasons;
@@ -127,9 +128,24 @@
 
     });
 
-    $(document).on('click', '.execute-comfirm', function() {
+    $(document).on('click', '.execute-comfirm', function () {
         // 我需要往game表里面插入数据了
         // 看看之前写的生成新赛季的代码
+        var index = $(this).attr('season_index_in_vue');
+        var begin_date = $(this).parent().parent().find('td[name=beginAt]').text();
+        var end_date = $(this).parent().parent().find('td[name=endAt]').text();
+        //console.log($(this).parent().html());
+
+        console.log(begin_date + ' >><< ' +  end_date);
+
+        $.post('/create-new-season', {
+            season_name: vm.seasons[index].season_name,
+            begin_date: begin_date,
+            end_date: end_date
+        }).done(function () {
+            // 创建完成之后应该改一下按钮的启动与否的状态
+            vm.seasons.start = 'true';
+        });
     });
 </script>
 

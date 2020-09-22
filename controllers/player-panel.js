@@ -100,10 +100,12 @@ module.exports = {
         // 应该添加一个处理异常情况的
         if(ctx.request.body.state == 'add') {
             // 这里要加attrs
-            res = await Player.create(data, {
-                fields: ['player_name', 'shirt_number', 'age', 'preferred_foot',
-                    'position', 'club', 'country']
-            }
+            res = await Player.create(
+                data, 
+                {
+                    fields: ['player_name', 'shirt_number', 'age', 'preferred_foot',
+                        'position', 'club', 'country']
+                }
             );
         } else if(ctx.request.body.state == 'edit') {
             Player.update({

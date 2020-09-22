@@ -1,28 +1,19 @@
 {% extends "base.html" %} {% block main %}
-<div class="container">
-    <div class="card">
+<div class="container" id="games-list">
+    <div v-for="gt in games_with_turn" class="card">
         <div class="card-header">
-            <label>0921</label>
+            Turn <label v-text="gt.turn"></label>
         </div>
         <div class="list-group card-body" style="padding: 0;">
-        <a class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
-            <span>Manchester United</span>
-            <span>---</span>
-            <span>Leicester City</span>
-        </a>
-        <a class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
-            <span>Manchester United</span>
-            <span>---</span>
-            <span>Leicester City</span>
-        </a>
-        <a class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
-            <span>Manchester United</span>
-            <span>---</span>
-            <span>Leicester City</span>
-        </a>
+            <a :href="game.href" v-for="game in gt.games" class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(4, 25%);" >
+                <span v-text="game.matchday">09-14</span>
+                <span v-text="game.home_team">Manchester United</span>
+                <span>---</span>
+                <span v-text="game.away_team">Leicester City</span>
+            </a>
         </div>
     </div>
-    <div class="card">
+    <!-- <div class="card">
         <div class="card-header">
             <label>0921</label>
         </div>
@@ -42,7 +33,7 @@
             <span>---</span>
             <span>Leicester City</span>
         </a>
-        </div>
+        </div> -->
     </div>
 
         <!-- <table class="table table-hover">
@@ -74,6 +65,21 @@
 
 
 <script>
+// 由于要加 turn 作为区分
+// 所以现在要换个做法
+// 也就是 
+var vm = new Vue({
+    el: '#games-list',
+    data: {
+        games_with_turn: []
+        /*
+            { 1, [Game{}, Game{}, Game{}] } 
+            { 2, [Game{}, Game{}, Game{}] } 
+            { 3, [Game{}, Game{}, Game{}] } 
+            { 4, [Game{}, Game{}, Game{}] } 
+        */
+    }
+})
 $(function() {
     $('tr').click(function() {
         console.log('click-a-tr');
@@ -85,6 +91,36 @@ $(function() {
     });
 
     $('.game-id').hide();
+
+    $.get('/fetch/games').done(function (data) {
+        console.log(data.turns);
+        var games = data.games;
+        games.forEach(function(game, index, this_arr) {
+            var href = "/edit-game/" 
+                        +
+                        game.id + '-' 
+                        +
+                        game.home_team.replace(' ', '_') + '-'
+                        +
+                        game.away_team.replace(' ', '_');
+            this_arr[index]['href'] = href;
+        })
+        for(var i = 1; i <= parseInt(data.turns); i++) {
+            vm.games_with_turn.push({
+                'turn': i,
+                'games': games.filter(function(game) {
+                    return game.turn == i;
+                })
+            });
+            // games.filter(function(game) {
+            //     return game.turn == i;
+            // }).forEach(function(per_game) {
+            //     vm.games_with_turn_index[i-1].push(per_game);
+            // });
+        }
+        console.log(vm.games_with_turn);
+    })
+    
 });
 </script>
 {% endblock %}

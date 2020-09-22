@@ -1,7 +1,36 @@
 {% extends "base.html" %} {% block main %}
 
-this is game detail between {{ home_team }} and {{ away_team }}
-game's id is {{ game_id }}
+<div id="game-id">
+    {{ game_id }}
+</div>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 style="text-align: center" class="display-5">
+            <span id="home-team">{{ home_team }}</span> 
+            <img style="height: 50px; margin-right: 30px; margin-left: 30px;" src="../static/images/barca.png"> 
+            <span style="font-size: large;">vs.</span> 
+            <img style="height: 50px; margin-left: 30px; margin-right: 30px;" src="../static/images/barca.png">
+            <span id="away-team">{{ away_team }}</span>
+        </h1>
+        
+        <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+    </div>
+</div>
+
+
+<script>
+$(function() {
+    var home_team = $('#home-team').text();
+    var away_team = $('#away-team').text();
+    var id = $('#game-id').text();
+    $('#game-id').hide();
+
+    console.log(home_team);
+    console.log(away_team);
+    console.log(id);
+})
+</script>
 
 
 {% endblock %}
