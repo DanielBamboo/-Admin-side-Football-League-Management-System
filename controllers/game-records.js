@@ -5,9 +5,6 @@ const Game_record = tables.Game_record;
 module.exports = {
     'GET /fetch/game-records/:game_id': async (ctx, next) => {
         var game_id = ctx.params.game_id;
-        // console.log();
-        // console.log(game_id);
-        // console.log();
         var game_records = await Game_record.findAll({
             include: [
                 {
@@ -19,9 +16,6 @@ module.exports = {
                 game_id: game_id
             }
         });
-        
-        // console.log(JSON.stringify(records));
-        // console.log(records);
 
         var res_records = game_records.map(function(record) {
             return {

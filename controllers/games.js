@@ -10,7 +10,7 @@ const Op = tables.Op;
 async function getPlayerRecordsAndUpdateGames(game_ids) {
     var player_records = {};
     for (var i = 0; i < game_ids.length; i++) {
-        console.log('getPlayerRecordsAndUpdateGames() deal with game_id: ' + game_ids[i]);
+        //console.log('getPlayerRecordsAndUpdateGames() deal with game_id: ' + game_ids[i]);
         var element = game_ids[i];
         var game_records_in_this_id = await Game_record.findAll({
             include: [
@@ -323,78 +323,6 @@ module.exports = {
             })
 
         })
-
-        // game_ids.forEach(async (element) => {
-        //     console.log('now deal with :' + element);
-        //     // 只会查出来一项
-        //     var game_include_records = await Game.findAll({
-        //         include: [
-        //             {
-        //                 model: Game_record,
-        //                 require: true
-        //             }
-        //         ],
-        //         where: {
-        //             id: element
-
-        //         }
-        //     });
-
-        //     // 就此，我们获取到了所需要的记录，这可能和之前想得不太一样
-        //     // 记录是这样的
-        //     /*
-        //     id: 92,
-        //     season: 'Premier League 2019/2020',
-        //     league: 'Premier League',
-        //     turn: 1,
-        //     matchday: '2019-08-11',
-        //     home_team: 'Manchester City',
-        //     away_team: 'Manchester United',
-        //     home_team_goal: null,
-        //     away_team_goal: null,
-        //     game_result: null,
-        //     game_records:
-        //     [ 
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record],
-        //         [game_record] 
-        //     ] },
-        // */
-        //     //有些神奇
-        //     // 这大概就是include 的意思了，包含在结果里面
-        //     // 测试一下，如果有别的比赛记录加入了会怎样
-        //     // 测试正常，现在开始计算比赛结果
-
-
-
-
-        //     //现在还要进行一次连接操作找到这个球员是哪个俱乐部的。
-        //     //有点点复杂，这个
-
-
-        //     var home_team_goal = 0;
-        //     var away_team_goal = 0;
-
-        //     game_include_records[0].game_records.forEach(element => {
-
-        //     });
-
-
-        // });
-        // res.forEach(element => {
-        //     console.log(element);
-        // });
-
-
 
         ctx.response.type = 'application/json';
         ctx.response.body = {

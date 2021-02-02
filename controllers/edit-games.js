@@ -6,7 +6,7 @@ module.exports = {
         teams.forEach(function(part, index, this_arr) {
             this_arr[index] = part.replace('_', ' ');
         });
-        // teams.splice(2, 1);
+        
         console.log(teams);
 
         ctx.render('game-detail.html', {

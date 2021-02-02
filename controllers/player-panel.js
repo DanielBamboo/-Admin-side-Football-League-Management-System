@@ -16,15 +16,6 @@ function findInPlayers(where_clause) {
 }
 
 function fuzzyQueryPlayers(where_clause) {
-    // var player_name_filter = where_clause.player_name != undefined ? {} : {
-    //     [Op.like]: `%${where_clause.player_name}%`
-    // }
-    // var club_filter = where_clause.club != undefined ? {} : {
-    //     [Op.like]: `%${where_clause.player_name}%`
-    // }
-    // var preferred_foot_filter = where_clause.preferred_foot != undefined ? {} : {
-    //     [Op.like]: `%${where_clause.player_name}%`
-    // }
     Object.keys(where_clause).forEach((key) => {
         var content = where_clause[key];
         where_clause[key] = {
@@ -45,14 +36,6 @@ module.exports = {
         var player_list = await findInPlayers({});
         ctx.response.type = 'application/json';
         ctx.response.body = {
-            // player_list: [
-            //     {
-            //         player_name: 'Lihua'
-            //     },
-            //     {
-            //         player_name: 'Liming'
-            //     }
-            // ]
             player_list: player_list
         };
     },
@@ -85,20 +68,6 @@ module.exports = {
             data.shirt_number = null;
         }
         if(data.club == "");
-
-        // 如果已经存在就更改，如果未存在就添加
-        // var id_resisted = (async () => {
-        //     var players = await Player.findAll({
-        //         where: {
-        //             id: data.id
-        //         }
-        //     });
-        //     console.log(players);
-        //     if(players.length == 0) {
-        //         return false;
-        //     }
-        //     return true;
-        // })();
 
         var res;
 
@@ -166,16 +135,6 @@ module.exports = {
             console.log('ERROR');
             return 'ERROR';
         });
-        // .then(function(row_deleted) {
-
-        //     if(row_deleted == 1) {
-        //         console.log('delete success');
-        //     } else {
-        //         console.log('delete fail');
-        //     }
-        // }, function(err) {
-        //     console.log('DELETE ERROR !!!');
-        // });
 
         console.log(status);
 
