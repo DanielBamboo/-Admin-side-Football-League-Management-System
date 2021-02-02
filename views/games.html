@@ -5,14 +5,17 @@
             Turn <label v-text="gt.turn"></label>
         </div>
         <div class="list-group card-body" style="padding: 0;">
-            <a :href="game.href" v-for="game in gt.games" class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(4, 25%);" >
+            <a :href="game.href" v-for="game in gt.games" class="list-group-item list-group-item-action" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: 20% 20% 25% 10% 25%;" >
+                <span v-text="game.league"></span>
                 <span v-text="game.matchday">09-14</span>
                 <span v-text="game.home_team">Manchester United</span>
-                <span>---</span>
+                <span v-text="getGameResultString(game.id)"></span>
                 <span v-text="game.away_team">Leicester City</span>
             </a>
         </div>
     </div>
+
+    <button type="button" id="refresh" style="position: fixed; bottom: 50px; right: 50px; z-index: 99;" class="btn btn-primary">Refresh</button>
     <!-- <div class="card">
         <div class="card-header">
             <label>0921</label>
@@ -20,21 +23,21 @@
         <div class="list-group card-body" style="padding: 0;">
         <a class="list-group-item" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
             <span>Manchester United</span>
-            <span>---</span>
+            <span></span>
             <span>Leicester City</span>
         </a>
         <a class="list-group-item" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
             <span>Manchester United</span>
-            <span>---</span>
+            <span></span>
             <span>Leicester City</span>
         </a>
         <a class="list-group-item" style="font-size: 14px; justify-items:center; display: grid; grid-template-columns: repeat(3, 33.33%);" href="/edit-game/1-Manchester_United-Leicester_City">
             <span>Manchester United</span>
-            <span>---</span>
+            <span></span>
             <span>Leicester City</span>
         </a>
-        </div> -->
-    </div>
+        </div>
+    </div> -->
 
         <!-- <table class="table table-hover">
             <tbody>
@@ -77,7 +80,24 @@ var vm = new Vue({
             { 2, [Game{}, Game{}, Game{}] } 
             { 3, [Game{}, Game{}, Game{}] } 
             { 4, [Game{}, Game{}, Game{}] } 
-        */
+        */,
+        games: []
+    },
+    methods: {
+        getGameResultString: function (id) {
+            var output_string = '';
+            for(var game of this.games) {
+                if(game.id == id && game.home_team_goal != null) {
+                    output_string = output_string.concat(game.home_team_goal).concat(' - ').concat(game.away_team_goal);
+                    break;
+                }
+            }
+            if(output_string.length != 0) {
+                return output_string;
+            } else {
+                return '-';
+            }
+        }
     }
 })
 $(function() {
@@ -90,11 +110,13 @@ $(function() {
         $.get('/edit-game/' + name);
     });
 
+
     $('.game-id').hide();
 
     $.get('/fetch/games').done(function (data) {
         console.log(data.turns);
         var games = data.games;
+        vm.games = data.games;
         games.forEach(function(game, index, this_arr) {
             var href = "/edit-game/" 
                         +
@@ -119,6 +141,14 @@ $(function() {
             // });
         }
         console.log(vm.games_with_turn);
+        // 每次进来就更新下结果( 可以加一个fresh 按钮)
+
+        
+        $('#refresh').click(function() {
+            $.get('/update/games').done(data => {
+                location.reload();
+            })
+        })
     })
     
 });

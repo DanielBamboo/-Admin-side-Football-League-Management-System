@@ -36,22 +36,16 @@ var User = sequelize.define('user', {
 var Player = sequelize.define('player', {
     id: {
         type: Sequelize.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        field: 'id',
+        autoIncrement: true
     },
     player_name: Sequelize.STRING(20),
-    shirt_number: {
-        type:Sequelize.INTEGER,
-        validate: {
-        }
-    },
+    shirt_number: Sequelize.INTEGER,
     age: Sequelize.INTEGER,
     preferred_foot: Sequelize.STRING(6),
     position: Sequelize.STRING(20),
-    club: {
-        type: Sequelize.STRING(20),
-        validate: {
-        }
-    },
+    club: Sequelize.STRING(20),
     country: Sequelize.STRING(20)
 }, {
     timestamps: false
@@ -106,6 +100,103 @@ var Season = sequelize.define('season', {
     start: Sequelize.BOOLEAN
 }, {
     timestamps: false
+});
+
+var Game_record = sequelize.define('game_record', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        field: 'id',
+        autoIncrement: true
+    },
+    game_id: Sequelize.INTEGER,
+    event: Sequelize.INTEGER,
+    player_id: {
+        type: Sequelize.INTEGER,
+        field: 'player_id'
+    },
+    minutes: Sequelize.INTEGER
+}, {
+    timestamps: false
+});
+
+var Player_record = sequelize.define('player_record', {
+    player_id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        field: 'player_id'
+    },
+    season: {
+        type: Sequelize.STRING(30),
+        primaryKey: true
+    },
+    goal: Sequelize.INTEGER,
+    assist: Sequelize.INTEGER
+}, {
+    timestamps: false
+});
+
+var Club_record = sequelize.define('club_record', {
+    club_name: {
+        type: Sequelize.STRING(20),
+        primaryKey: true
+    },
+    season: {
+        type: Sequelize.STRING(30),
+        primaryKey: true
+    },
+    league: Sequelize.STRING(30),
+    points: Sequelize.INTEGER,
+    wins: Sequelize.INTEGER,
+    draws: Sequelize.INTEGER,
+    loses: Sequelize.INTEGER,
+    goals: Sequelize.INTEGER,
+    lose_goals: Sequelize.INTEGER,
+    turns: Sequelize.INTEGER,
+}, {
+    timestamps: false
+});
+
+// Game_record.associate = function(models) {
+//     Game_record.hasOne(models.Player, {
+//         foreignKey: 'id',
+//         sourceKey: 'Player_id'
+//     });
+// }
+
+// Player.associate = function(models) {
+//     Game_record.belongsTo(models.Player, {
+//         foreignKey: 'id'
+//     });
+// }
+
+Game_record.belongsTo(Player, {
+    targetKey: 'id',
+    foreignKey: 'player_id'
+});
+
+Player.hasMany(Game_record, {
+    sourceKey: 'id',
+    foreignKey: 'player_id'
+});
+
+Game_record.belongsTo(Game, {
+    targetKey: 'id',
+    foreignKey: 'game_id'
+});
+
+Game.hasMany(Game_record, {
+    sourceKey: 'id',
+    foreignKey: 'game_id'
+});
+
+Club.belongsTo(Coach, {
+    sourceKey: 'coach_name',
+    foreignKey: 'chief_coach'
+})
+Coach.hasOne(Club, {
+    targetKey: 'coach_name',
+    foreignKey: 'chief_coach'
 })
 
 
@@ -117,5 +208,8 @@ module.exports = {
     League: League,
     Game: Game,
     Season: Season,
+    Game_record: Game_record,
+    Club_record: Club_record,
+    Player_record: Player_record,
     Op: Sequelize.Op
 }

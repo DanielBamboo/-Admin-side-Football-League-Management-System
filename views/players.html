@@ -5,10 +5,10 @@
     0920: 搭建好需要的vue框架
     0920: 使用vue ，左边点击右边出信息 -->
 
-<div style="margin-top: 3%; margin-bottom: 3%;" class="container" id="edit-players">
+<div style="margin-top: 3%; margin-bottom: 3%; overflow: auto;" class="container" id="edit-players">
     <div class="row">
         <div id="player-choose" class="col-md-8">
-            
+
             <form style="margin-bottom: 3%;" id='form-filter'>
                 <div class="row">
                     <div class="col">
@@ -32,12 +32,16 @@
             </form>
 
             <div>
-                <button style="width: 100%; margin-bottom: 2%;" @click="someOperationBeforeAdd()" class="btn btn-primary" id="btn-add-a-player">+</button>
+                <button style="width: 100%; margin-bottom: 2%;" @click="someOperationBeforeAdd()"
+                    class="btn btn-primary" id="btn-add-a-player">+</button>
             </div>
 
-            <ul id="player-list" class="list-group">
-                <li class="list-group-item list-group-item-action" v-for="p in player_list"><span v-text="p.player_name"></span></li>
-            </ul>
+            <div style="border: 5px solid rgb(255, 255, 255); height: 70vh; overflow: auto;">
+                <ul id="player-list" class="list-group">
+                    <li class="list-group-item list-group-item-action" v-for="p in player_list"><span :playerid="p.id"
+                            v-text="p.player_name"></span></li>
+                </ul>
+            </div>
         </div>
 
         <div id="player-show" class="col-md-4">
@@ -47,11 +51,13 @@
                 </div> -->
                 <div class="form-group">
                     ID: <label name="id" v-text="choosed_player.id"></label>
-                    <button type="button" style="float:right; padding: 1px;" @click="deleteOperation()" class="btn btn-primary" id="btn-delete-player" >Delete</button>
+                    <button type="button" style="float:right; padding: 1px;" @click="deleteOperation()"
+                        class="btn btn-primary" id="btn-delete-player">Delete</button>
                 </div>
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input name="player_name" :value="choosed_player.player_name" type="text" class="form-control" id="name" >
+                    <input name="player_name" :value="choosed_player.player_name" type="text" class="form-control"
+                        id="name">
                 </div>
                 <div class="form-group">
                     <label for="age">Age</label>
@@ -67,16 +73,16 @@
                     <label for="club">Club</label>
                     <div class="form-group">
 
-                         <!-- 搞个假级联吧，还是有级联的，就是保持@change，然后在点击的时候更改choosed_league的值 -->
-                         <!-- 再然后，写好@change方法，使之具备级联的功能 -->
-                         <!-- 下午来做这些事情 -->
-                        <select name="league"  @change="changeClubs()" class="form-control" id="league">
+                        <!-- 搞个假级联吧，还是有级联的，就是保持@change，然后在点击的时候更改choosed_league的值 -->
+                        <!-- 再然后，写好@change方法，使之具备级联的功能 -->
+                        <!-- 下午来做这些事情 -->
+                        <select name="league" @change="changeClubs()" class="form-control" id="league">
                             <option v-for="lg in leagues" v-text="lg"></option>
                         </select>
                     </div>
                     <!-- <input name="club" :value="choosed_player.club" type="text" class="form-control" id="club"> -->
                     <div class="form-group">
-                        <select name="club"  class="form-control" id="club">
+                        <select name="club" class="form-control" id="club">
                             <!-- 用js来改这个league_to_clubs -->
                         </select>
                     </div>
@@ -86,7 +92,8 @@
 
                 <div class="form-group">
                     <label for="number">Shirt number</label>
-                    <input name="shirt_number" :value="choosed_player.shirt_number" type="Number" class="form-control" id="number">
+                    <input name="shirt_number" :value="choosed_player.shirt_number" type="Number" class="form-control"
+                        id="number">
                 </div>
                 <div class="form-group">
                     <label for="position">Position</label>
@@ -99,7 +106,8 @@
                 </div>
                 <div class="form-group">
                     <label for="prefered_foot">Preferred Foot</label>
-                    <select name="preferred_foot" :value="choosed_player.preferred_foot" class="form-control" id="preferred_foot">
+                    <select name="preferred_foot" :value="choosed_player.preferred_foot" class="form-control"
+                        id="preferred_foot">
                         <option value="right">right</option>
                         <option value="left">left</option>
                         <option value="both">both</option>
@@ -116,74 +124,35 @@
 
 
 <script>
-/*
-    现在的目标是实现级联的更新操作，那么根据我的设想应该可以使用 JavaScript + Vue 的联动
-    把全部俱乐部存在vm里面
-    [
-        {
-            club_name: ,
-            league: ,
-        },
-        {
-            club_name: ,
-            league: ,
-        }
-        .
-        .
-        .
-    ]
-    next:
-    当更改第一个选择框的时候(也就是联赛，同步更改第二个框框的内容)
-    成功了，只不过不是弹出框，哈哈哈
-    
-*/
-
-
-var vm = new Vue({
-    el: '#edit-players',
-    // 如何只载入不修改呢
-    data: {
-        player_list: [],
-        choosed_player: {
-            id: null,
-            player_name: null,
-            shirt_number: null,
-            age: null,
-            preferred_foot: null,
-            position: null,
-            league: 'please choose a league',
-            club: null,
-            country: null
-        },
-        clubs: [
-        ],
-        leagues: [
-            'please choose a league'
-        ],
-        choosed_league: 'please choose a league',
-        league_to_clubs: [],
-        choosed_club: '',
-        cur_state: 'add' // edit or add
-    },
-    computed: {
-    },
-    methods: {
-        changeClubs : function() {
-            // 不再需要choosed_league
-            var choosed_league = $('#league').val();
-            $('#club').empty();
-            if(choosed_league != "please choose a league") {
-                for(var club of vm.clubs) {
-                    if(club.league == choosed_league) {
-                        var option = $("<option>").val(club.club_name).text(club.club_name);
-                        $('#club').append(option);
-                    }
-                }
-                console.log(vm.choosed_player.club);
+    /*
+        现在的目标是实现级联的更新操作，那么根据我的设想应该可以使用 JavaScript + Vue 的联动
+        把全部俱乐部存在vm里面
+        [
+            {
+                club_name: ,
+                league: ,
+            },
+            {
+                club_name: ,
+                league: ,
             }
-        },
-        clearPlayerInfo: function() {
-            vm.choosed_player = {
+            .
+            .
+            .
+        ]
+        next:
+        当更改第一个选择框的时候(也就是联赛，同步更改第二个框框的内容)
+        成功了，只不过不是弹出框，哈哈哈
+        
+    */
+
+
+    var vm = new Vue({
+        el: '#edit-players',
+        // 如何只载入不修改呢
+        data: {
+            player_list: [],
+            choosed_player: {
                 id: null,
                 player_name: null,
                 shirt_number: null,
@@ -193,239 +162,278 @@ var vm = new Vue({
                 league: 'please choose a league',
                 club: null,
                 country: null
-            }
-            $('#league').val('please choose a league');
-            $('#club').empty();
+            },
+            clubs: [
+            ],
+            leagues: [
+                'please choose a league'
+            ],
+            choosed_league: 'please choose a league',
+            league_to_clubs: [],
+            choosed_club: '',
+            cur_state: 'add' // edit or add
         },
-        someOperationBeforeAdd: function() {
-            this.clearPlayerInfo();
-            vm.cur_state = 'add';
-            $('.list-group-item').removeClass('active');
+        computed: {
         },
-        deleteOperation: function() {
-            console.log('click');
-            console.log('ajax DELETE');
-            var target = vm.choosed_player;
-            $.ajax({
-                url: '/modify/player',
-                type: 'DELETE',
-                dataType: 'json',
-                data: {
-                    id: target.id
-                },
-                success: function() {
-                    var index = -1;
-                    for(var i = 0; i < vm.player_list.length; i++) {
-                        if(vm.player_list[i] == target) {
-                            index = i;
-                            break;
+        methods: {
+            changeClubs: function () {
+                // 不再需要choosed_league
+                var choosed_league = $('#league').val();
+                $('#club').empty();
+                if (choosed_league != "please choose a league") {
+                    for (var club of vm.clubs) {
+                        if (club.league == choosed_league) {
+                            var option = $("<option>").val(club.club_name).text(club.club_name);
+                            $('#club').append(option);
                         }
                     }
-                    if(index != -1) {
-                        vm.player_list.splice(index, 1);
+                    console.log(vm.choosed_player.club);
+                }
+            },
+            clearPlayerInfo: function () {
+                vm.choosed_player = {
+                    id: null,
+                    player_name: null,
+                    shirt_number: null,
+                    age: null,
+                    preferred_foot: null,
+                    position: null,
+                    league: 'please choose a league',
+                    club: null,
+                    country: null
+                }
+                $('#league').val('please choose a league');
+                $('#club').empty();
+            },
+            someOperationBeforeAdd: function () {
+                this.clearPlayerInfo();
+                vm.cur_state = 'add';
+                $('.list-group-item').removeClass('active');
+            },
+            deleteOperation: function () {
+                console.log('click');
+                console.log('ajax DELETE');
+                var target = vm.choosed_player;
+                $.ajax({
+                    url: '/modify/player',
+                    type: 'DELETE',
+                    dataType: 'json',
+                    data: {
+                        id: target.id
+                    },
+                    success: function () {
+                        var index = -1;
+                        for (var i = 0; i < vm.player_list.length; i++) {
+                            if (vm.player_list[i] == target) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index != -1) {
+                            vm.player_list.splice(index, 1);
+                        }
+                        alert('Already delete player: ' + target.player_name);
+                    },
+                    error: function () {
+                        console.log('err');
+                    },
+                    complete: function () {
+                        console.log('complete');
                     }
-                    alert('Already delete player: ' + target.player_name);
-                },
-                error: function() {
-                    console.log('err');
-                },
-                complete: function() {
-                    console.log('complete');
-                }
-            }); //end ajax
-            // console.log('delete done');
-            // $.ajax({
-            //     type: 'DELETE',
-            //     url: '/modify/player',
-            //     data: {
-            //         id: vm.choosed_player.id
-            //     }
-            // })
-            this.clearPlayerInfo();
-        }
-    }
-});
-
-$(function() {
-    // 需要一个数据结构来保存
-    // {
-    //     'Premier League': [],
-    //     'EFL Championship': []
-    // }
-    var league_map_clubs = {};
-
-
-
-
-    // 先获取到clubs，然后在球员中插入这个clubs
-    $.get('/fetch/clubs').done(function(data) {
-        vm.clubs = data.clubs;
-        for(var i of vm.clubs) {
-            console.log(i.club_name);
+                }); //end ajax
+                // console.log('delete done');
+                // $.ajax({
+                //     type: 'DELETE',
+                //     url: '/modify/player',
+                //     data: {
+                //         id: vm.choosed_player.id
+                //     }
+                // })
+                this.clearPlayerInfo();
+            }
         }
     });
 
-    $.get('/fetch/leagues').done(function(data) {
-        console.log(data.leagues);
-        for(var league of data.leagues) {
-            vm.leagues.push(league.league_name);
-        }
-    })
-
-    $.get('/fetch/player_list').done(function(data) {
-        vm.player_list = data.player_list;
-        for(var i = 0; i < vm.player_list.length; i++) {
-            var club_name = vm.player_list[i]['club'];
-            for(var c of vm.clubs) {
-                if(c.club_name == club_name) {
-                    vm.player_list[i]['league'] = c.league;
-                    break;
-                }
-            }
-        }
-    }).fail(function(jqXHR, testStatus) {
-        alert('Error: ' + jqXHR.status);
-    });
-
-
-    $(document).on('click', '.list-group-item', function() {
-        vm.cur_state = 'edit';
-        console.log('click');
-        $('.list-group-item').removeClass('active');
-        $(this).addClass('active');
-        // 获取选中的球员名字
-        var player_name = $(this).children('span:first-child').text();
-        console.log('pick ' + player_name);
-        //查找这个球员
-        for(var player of vm.player_list) {
-            if(player.player_name == player_name) {
-                console.log(player);
-                vm.choosed_player = player;
-                break;
-            }
-        }
-        $('#league').val(vm.choosed_player.league);
-        $('#club').empty();
-        for(var club of vm.clubs) {
-            if(club.league == vm.choosed_player.league) {
-                var option = $("<option>").val(club.club_name).text(club.club_name);
-                $('#club').append(option);
-            }
-        }
-        $('#club').val(vm.choosed_player.club);
-        console.log(vm.choosed_player.club);
-    });
-
-
-
-    $('#info-form').submit(function(e) {
-        var cur_state = vm.cur_state;
-        //what's this?
-        e.preventDefault();
-        var upload_data = {
-            player : {
-                player_name: $(this).find('input[name=player_name]').val(),
-                shirt_number: $(this).find('input[name=shirt_number]').val(),
-                age: $(this).find('input[name=age]').val(),
-                preferred_foot: $(this).find('select[name=preferred_foot]').val(),
-                position: $(this).find('select[name=position]').val(),
-                club: $(this).find('select[name=club]').val(),
-                country: $(this).find('input[name=country]').val(),
-            }, 
-            state : cur_state
-        }
-        console.log(JSON.stringify(upload_data.player));
-
-        if(cur_state == 'edit') {
-            upload_data.player['id'] = $('#info-form').find('label[name=id]').text();
-        }
-
-        var info = '';
-        if(upload_data.player.player_name.length == 0) {
-            info = info.concat('\nplayer_name');
-        } 
-        if(upload_data.player.preferred_foot == null) {
-            info = info.concat('\npreferred_foot');
-        }
-        if(upload_data.player.position == null) {
-            info = info.concat('\nposition');
-        } 
-        if(upload_data.player.country.length == 0) {
-            info = info.concat('\ncountry');
-        }
-        if(upload_data.player.age.length == 0) {
-            info = info.concat('\nage');
-        }
-
-        if(info.length != 0) {
-            alert(info.concat('\n为空，不合规定'));
-            return false;
-        }
-
-
-        // if(upload_data.player.shirt_number == "") {
-        //     upload_data.player.shirt_number = null;
+    $(function () {
+        // 需要一个数据结构来保存
+        // {
+        //     'Premier League': [],
+        //     'EFL Championship': []
         // }
-        // if(upload_data.player.country == null) {
-        //     upload_data.player.country = "";
-        // }
+        var league_map_clubs = {};
 
-        var league = $(this).find('select[name=league]').val();
 
-        $.post('/modify/player', upload_data).done(function(data) {
 
-            // 根据返回的东西确定这是不是个已存在的
-            //console.log(data.player);
-            var flag = 0;
-            upload_data.player['league'] = league;
-            for(var i = 0; i < vm.player_list.length; i++) {
-                if(vm.player_list[i].id == upload_data.player.id) {
-                    vm.player_list[i] = upload_data.player;
-                    flag = 1;
-                    break;
-                }
+
+        // 先获取到clubs，然后在球员中插入这个clubs
+        $.get('/fetch/clubs').done(function (data) {
+            vm.clubs = data.clubs;
+            for (var i of vm.clubs) {
+                console.log(i.club_name);
             }
-            if(!flag) {
-                vm.player_list.push(upload_data.player);
-            }
-        }).fail(function(jqXHR, testStatus) {
-            alert('error: '+ jqXHR.status);
         });
-        return false;
-    });
 
-    $('#form-filter').submit(function() {
-        var club = $(this).find('input[name=club]').val();
-        var name = $(this).find('input[name=name]').val();
-        var preferred_foot = $(this).find('select[name=preferred_foot]').val();
+        $.get('/fetch/leagues').done(function (data) {
+            console.log(data.leagues);
+            for (var league of data.leagues) {
+                vm.leagues.push(league.league_name);
+            }
+        })
 
-        var where_clause = {};
-
-        where_clause['club'] = club;
-        where_clause['player_name'] = name;
-        where_clause['preferred_foot'] = preferred_foot;
-
-        $.post('/fetch/player_list', where_clause).done(function(data) {
+        $.get('/fetch/player_list').done(function (data) {
             vm.player_list = data.player_list;
-            for(var i = 0; i < vm.player_list.length; i++) {
+            for (var i = 0; i < vm.player_list.length; i++) {
                 var club_name = vm.player_list[i]['club'];
-                for(var c of vm.clubs) {
-                    if(c.club_name == club_name) {
+                for (var c of vm.clubs) {
+                    if (c.club_name == club_name) {
                         vm.player_list[i]['league'] = c.league;
                         break;
                     }
                 }
             }
-        }).fail(function(jqXHR, testStatus) {
+        }).fail(function (jqXHR, testStatus) {
             alert('Error: ' + jqXHR.status);
         });
 
-        return false;
+
+        $(document).on('click', '.list-group-item', function () {
+            vm.cur_state = 'edit';
+            console.log('click');
+            $('.list-group-item').removeClass('active');
+            $(this).addClass('active');
+            // 获取选中的球员名字
+            var player_id = $(this).children('span:first-child').attr('playerid');
+            console.log('pick id: ' + player_id);
+            //查找这个球员
+            for (var player of vm.player_list) {
+                if (player.id == player_id) {
+                    console.log(player);
+                    vm.choosed_player = player;
+                    break;
+                }
+            }
+            $('#league').val(vm.choosed_player.league);
+            $('#club').empty();
+            for (var club of vm.clubs) {
+                if (club.league == vm.choosed_player.league) {
+                    var option = $("<option>").val(club.club_name).text(club.club_name);
+                    $('#club').append(option);
+                }
+            }
+            $('#club').val(vm.choosed_player.club);
+            console.log(vm.choosed_player.club);
+        });
+
+
+
+        $('#info-form').submit(function (e) {
+            var cur_state = vm.cur_state;
+            //what's this?
+            e.preventDefault();
+            var upload_data = {
+                player: {
+                    player_name: $(this).find('input[name=player_name]').val(),
+                    shirt_number: $(this).find('input[name=shirt_number]').val(),
+                    age: $(this).find('input[name=age]').val(),
+                    preferred_foot: $(this).find('select[name=preferred_foot]').val(),
+                    position: $(this).find('select[name=position]').val(),
+                    club: $(this).find('select[name=club]').val(),
+                    country: $(this).find('input[name=country]').val(),
+                },
+                state: cur_state
+            }
+            console.log(JSON.stringify(upload_data));
+
+            if (cur_state == 'edit') {
+                upload_data.player['id'] = $('#info-form').find('label[name=id]').text();
+            }
+
+            var info = '';
+            if (upload_data.player.player_name.length == 0) {
+                info = info.concat('\nplayer_name');
+            }
+            if (upload_data.player.preferred_foot == null) {
+                info = info.concat('\npreferred_foot');
+            }
+            if (upload_data.player.position == null) {
+                info = info.concat('\nposition');
+            }
+            if (upload_data.player.country.length == 0) {
+                info = info.concat('\ncountry');
+            }
+            if (upload_data.player.age.length == 0) {
+                info = info.concat('\nage');
+            }
+
+            if (info.length != 0) {
+                alert(info.concat('\n为空，不合规定'));
+                return false;
+            }
+
+
+            // if(upload_data.player.shirt_number == "") {
+            //     upload_data.player.shirt_number = null;
+            // }
+            // if(upload_data.player.country == null) {
+            //     upload_data.player.country = "";
+            // }
+
+            var league = $(this).find('select[name=league]').val();
+
+            $.post('/modify/player', upload_data).done(function (data) {
+
+                // 根据返回的东西确定这是不是个已存在的
+                //console.log(data.player);
+                var flag = 0;
+                upload_data.player['league'] = league;
+                for (var i = 0; i < vm.player_list.length; i++) {
+                    if (vm.player_list[i].id == upload_data.player.id) {
+                        vm.player_list[i] = upload_data.player;
+                        flag = 1;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    vm.player_list.push(upload_data.player);
+                }
+            }).fail(function (jqXHR, testStatus) {
+                alert('error: ' + jqXHR.status);
+            });
+            return false;
+        });
+
+        $('#form-filter').submit(function () {
+            var club = $(this).find('input[name=club]').val();
+            var name = $(this).find('input[name=name]').val();
+            var preferred_foot = $(this).find('select[name=preferred_foot]').val();
+
+            var where_clause = {};
+
+            where_clause['club'] = club;
+            where_clause['player_name'] = name;
+            where_clause['preferred_foot'] = preferred_foot;
+
+            $.post('/fetch/player_list', where_clause).done(function (data) {
+                vm.player_list = data.player_list;
+                for (var i = 0; i < vm.player_list.length; i++) {
+                    var club_name = vm.player_list[i]['club'];
+                    for (var c of vm.clubs) {
+                        if (c.club_name == club_name) {
+                            vm.player_list[i]['league'] = c.league;
+                            break;
+                        }
+                    }
+                }
+            }).fail(function (jqXHR, testStatus) {
+                alert('Error: ' + jqXHR.status);
+            });
+
+            return false;
+        });
+
+
+
     });
-
-    
-
-});
 
 // $(document).on('click', '#delete', function() {
 //     console.log('click');

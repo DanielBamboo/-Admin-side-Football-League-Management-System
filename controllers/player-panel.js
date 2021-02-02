@@ -16,20 +16,25 @@ function findInPlayers(where_clause) {
 }
 
 function fuzzyQueryPlayers(where_clause) {
+    // var player_name_filter = where_clause.player_name != undefined ? {} : {
+    //     [Op.like]: `%${where_clause.player_name}%`
+    // }
+    // var club_filter = where_clause.club != undefined ? {} : {
+    //     [Op.like]: `%${where_clause.player_name}%`
+    // }
+    // var preferred_foot_filter = where_clause.preferred_foot != undefined ? {} : {
+    //     [Op.like]: `%${where_clause.player_name}%`
+    // }
+    Object.keys(where_clause).forEach((key) => {
+        var content = where_clause[key];
+        where_clause[key] = {
+            [Op.like]: `%${content}%`
+        }
+    });
     return (async() => {
         // var player_name_filter = where_clause.player_name ? {  }
         var players = await Player.findAll({
-            where: {
-                player_name: {
-                    [Op.like]: `%${where_clause.player_name}%`
-                },
-                club: {
-                    [Op.like]: `%${where_clause.club}%`
-                },
-                preferred_foot: {
-                    [Op.like]: `%${where_clause.preferred_foot}%`
-                }
-            }
+            where: where_clause
         })
         return players;
     })();
@@ -122,6 +127,8 @@ module.exports = {
                 }
             });
         }
+
+        console.log(res);
 
         if(ctx.request.body.state == 'edit') {
             res = data;

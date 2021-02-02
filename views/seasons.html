@@ -144,7 +144,8 @@
             end_date: end_date
         }).done(function () {
             // 创建完成之后应该改一下按钮的启动与否的状态
-            vm.seasons.start = 'true';
+            // Vue.set(vm.seasons, start, 'true');
+            location.reload();
         });
     });
 </script>

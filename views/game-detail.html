@@ -4,32 +4,280 @@
     {{ game_id }}
 </div>
 
-<div class="jumbotron jumbotron-fluid">
+<div class="container-fluid" id="game-details">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 style="text-align: center" class="display-5">
+                <span id="home-team">{{ home_team }}</span>
+                <!-- <img style="height: 50px; margin-right: 30px; margin-left: 30px;" src="../static/images/barca.png"> -->
+                <span style="font-size: large;">vs.</span>
+                <!-- <img style="height: 50px; margin-left: 30px; margin-right: 30px;" src="../static/images/barca.png"> -->
+                <span id="away-team">{{ away_team }}</span>
+            </h1>
+
+            <!-- <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p> -->
+        </div>
+    </div>
     <div class="container">
-        <h1 style="text-align: center" class="display-5">
-            <span id="home-team">{{ home_team }}</span> 
-            <img style="height: 50px; margin-right: 30px; margin-left: 30px;" src="../static/images/barca.png"> 
-            <span style="font-size: large;">vs.</span> 
-            <img style="height: 50px; margin-left: 30px; margin-right: 30px;" src="../static/images/barca.png">
-            <span id="away-team">{{ away_team }}</span>
-        </h1>
-        
-        <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+        <form v-for="(record, index) in records" :index="index" style="margin-bottom: 3%;">
+            <div class="row">
+
+                <div class="col">
+                    <select name="club" :value="record.club" class="form-control">
+                        <option value="{{ home_team }}">{{ home_team }}</option>
+                        <option value="{{ away_team }}">{{ away_team }}</option>
+                    </select>
+                </div>
+
+                <!-- ++<label v-text="record.club"></label>++ -->
+                <div v-show="record.club == home_team" class="col">
+                    <select name="home-team-player-name" :value="record.player_id" class="form-control">
+                        <option v-for="player in home_team_players" :value="player.id" v-text="player.player_name">
+                        </option>
+                    </select>
+                </div>
+
+                <div v-show="record.club == away_team" class="col">
+                    <select name="away-team-player-name" :value="record.player_id" class="form-control">
+                        <option v-for="player in away_team_players" :value="player.id" v-text="player.player_name">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col">
+                    <input :value="record.minutes" type="number" name="minutes" placeholder="Minutes"
+                        class="form-control">
+                </div>
+
+                <div class="col">
+                    <select :value="record.event" class="form-control">
+                        <option value="0">Goal</option>
+                        <option value="1">Assist</option>
+                        <option value="2">Yellow Card</option>
+                        <option value="3">Red Card</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" class="close delete-a-record" data-dismiss="alert">
+                        <span aria-hidden="true">×</span>
+                        <!-- <span class="sr-only">Close</span> -->
+                    </button>
+                </div>
+                <!-- <div class="col" style="text-align: right;">
+                <button type="submit" class="btn btn-primary"></button>
+            </div> -->
+            </div>
+        </form>
+    </div>
+
+    <button style="position:absolute; right: 50px; bottom: 50px; border-radius: 50%;" data-toggle="modal"
+        data-target="#exampleModal" type="button" class="btn btn-primary btn-lg">+</button>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-record-form">
+                        <div class="form-group">
+                            <label>club</label>
+                            <select v-model="modal_choosed_club" name='club' class="form-control">
+                                <option value="{{ home_team }}">{{ home_team }}</option>
+                                <option value="{{ away_team }}">{{ away_team }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>player</label>
+                            <select name="player-name" class="form-control">
+                                <option v-for="player in modal_display_players" :value="player.id"
+                                    v-text="player.player_name"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>minutes</label>
+                            <input type="number" name="minutes" placeholder="Minutes" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>event</label>
+                            <select class="form-control" name='event'>
+                                <option value="0">Goal</option>
+                                <option value="1">Assist</option>
+                                <option value="2">Yellow Card</option>
+                                <option value="3">Red Card</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="modal-submit-button" type="button" data-dismiss="modal"
+                        class="btn btn-primary">Done!</button>
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 
 <script>
-$(function() {
-    var home_team = $('#home-team').text();
-    var away_team = $('#away-team').text();
-    var id = $('#game-id').text();
-    $('#game-id').hide();
+    var vm = new Vue({
+        el: '#game-details',
+        data: {
+            home_team: '',
+            away_team: '',
+            home_team_players: [],
+            away_team_players: [],
+            // 进入页面的时候载入所有的event
+            records: [],
+            modal_choosed_club: ''
+        },
+        computed: {
+            modal_display_players: function () {
+                if (this.modal_choosed_club == this.home_team) {
+                    return this.home_team_players;
+                } else {
+                    return this.away_team_players;
+                }
+            }
+        }
+    })
+    $(function () {
+        var home_team = $('#home-team').text().trim();
+        var away_team = $('#away-team').text().trim();
+        var game_id = $('#game-id').text().trim();
+        $('#game-id').hide();
 
-    console.log(home_team);
-    console.log(away_team);
-    console.log(id);
-})
+        vm.home_team = home_team;
+        vm.away_team = away_team;
+        vm.modal_choosed_club = home_team;
+
+        console.log(home_team);
+        console.log(away_team);
+        console.log(game_id);
+
+
+
+        var ajax1 = $.post('/fetch/player_list', {
+            club: home_team
+        }).done((data) => {
+            data.player_list.forEach(function (player) {
+                vm.home_team_players.push(player);
+            })
+            console.log(vm.home_team_players);
+            console.log('home done');
+            return 'ok';
+        });
+
+        $.when(ajax1).done(() => {
+
+            var ajax2 = $.post('/fetch/player_list', {
+                club: away_team
+            }).done((data) => {
+                data.player_list.forEach(function (player) {
+                    vm.away_team_players.push(player);
+                });
+                console.log(vm.away_team_players);
+                console.log('away done')
+                return 'ok';
+            });
+
+            $.when(ajax2).done(() => {
+                $.get('/fetch/game-records/' + parseInt($('#game-id').text().trim())).done((data) => {
+                    vm.records = data.records;
+                    vm.records.sort(function (a, b) {
+                        if (a.minutes > b.minutes) return 1;
+                        else if (a.minutes == b.minutes) return 0;
+                        else return -1;
+                    });
+                    console.log(vm.records);
+                    console.log('record done');
+                    return 'ok';
+                });
+            });
+
+        })
+
+
+
+
+        $('#modal-submit-button').click(function () {
+            console.log('submit')
+            var player_id = $('#new-record-form').find('select[name=player-name]').val();
+            var player_name = $('#new-record-form').find('select[name=player-name]').find('option[value=' + player_id + ']').text();
+            var club = $('#new-record-form').find('select[name=club]').val();
+            var minutes = $('#new-record-form').find('input[name=minutes]').val();
+            var event = $('#new-record-form').find('select[name=event]').val();
+
+
+            var new_record = {
+                id: null,
+                game_id: game_id,
+                club: club,
+                event: null,
+                player_id: null,
+                player_name: player_name,
+                minutes: null
+            };
+
+            $.post('/create/record', {
+                record: {
+                    game_id: game_id,
+                    event: event,
+                    player_id: player_id,
+                    minutes: minutes
+                }
+            }).done((data) => {
+                console.log(data);
+                new_record = {
+                    id: data.record.id,
+                    game_id: data.record.game_id,
+                    club: club,
+                    event: data.record.event,
+                    player_id: data.record.player_id,
+                    player_name: player_name,
+                    minutes: data.record.minutes
+                };
+                console.log(new_record);
+                vm.records.push(new_record);
+                vm.records.sort(function(a, b) {
+                    if (a.minutes > b.minutes) return 1;
+                    else if (a.minutes == b.minutes) return 0;
+                    else return -1;
+                });
+            })
+        });
+
+
+
+
+    });
+
+    $(document).on('click', '.delete-a-record', function () {
+        var delete_index = $(this).parent().parent().parent().attr('index');
+        
+        var delete_record_id = vm.records[delete_index].id;
+        $.ajax({
+            url: '/modify/record/' + parseInt(delete_record_id),
+            type: 'DELETE',
+            success: function() {
+                vm.records.splice(delete_index, 1);
+                alert('deleted');
+            },
+            error: function() {
+                alert('error');
+            }
+        })
+    })
+
+
+    setTimeout('console.log(vm.records);', 2000);
 </script>
 
 

@@ -1,0 +1,326 @@
+{% extends "base.html" %} {% block main %}
+
+<div style="margin-top: 3%; margin-bottom: 3%; overflow: auto;" class="container" id="edit-clubs">
+    <div class="row">
+        <div id="club-choose" class="col-md-8">
+            <button style="width: 100%; margin-bottom: 2%;" @click="someOperationBeforeAdd()" class="btn btn-primary"
+                id="btn-add-a-club">+</button>
+            <div style="height: 70vh; overflow: auto;">
+                <ul id="club-list" class="list-group">
+                    <li class="list-group-item list-group-item-action" v-for="c in club_list"><span
+                            v-text="c.club_name"></span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="club-show" class="col-md-4">
+            <form id="info-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input name="club_name" :value="info.choosed_club.club_name" type="text" class="form-control"
+                        id="name">
+                </div>
+                <div class="form-group">
+                    <label for="league"></label>
+                    <select name="league" :value="info.choosed_club.league" class="form-control" id="league">
+                        <option v-for="lg in leagues" v-text="lg"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Current Coach: </label>
+                    <label name="coach_name" v-text="info.choosed_club.chief_coach"></label>
+                    <!-- <button v-show='info.choosed_club.chief_coach != ""' type="button">Fire Current Coach</button> -->
+                </div>
+                <div class="form-group">
+                    <button data-target="#exampleModal" data-toggle="modal" type="button" class="btn btn-primary">Sign
+                        New Coach</button>
+                </div>
+                <button type="submit" class="btn btn-primary" v-text="info.cur_state"></button>
+                <button type="button" class="btn btn-primary" @click="deleteOperation">DELETE</button>
+            </form>
+
+        </div>
+    </div>
+
+
+    <button style="position:absolute; right: 50px; bottom: 50px; border-radius: 50%;" data-toggle="modal"
+        data-target="#exampleModal" type="button" class="btn btn-primary btn-lg">+</button>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sign a new coach</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-record-form">
+                        <div class="form-group">
+                            <label>Unemployed Coach Name</label>
+                            <select v-model="info.modal_choosed_coach" name='club' class="form-control">
+                                <option v-for="coach_with_club in coaches_with_club"
+                                    v-text="coach_with_club.coach_name"></option>
+                            </select>
+
+                            <div>
+                                <label>country: </label>
+                                <label v-text="coache_name_map_country(info.modal_choosed_coach)"></label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="modal-submit-button" type="button" data-dismiss="modal"
+                        class="btn btn-primary">Done!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    console.log('pos');
+    var vm = new Vue({
+        el: '#edit-clubs',
+        data: {
+            leagues: [],
+            club_list: [],
+            coaches_with_club: [],
+            info: {
+                cur_state: 'add',
+                choosed_club: {
+                    club_name: '',
+                    league: 'please choose a league',
+                    chief_coach: ''
+                },
+                modal_choosed_coach: ''
+            }
+        },
+        methods: {
+            clearCoachInfo: function () {
+                Vue.set(vm.info, 'choosed_club', {
+                    club_name: '',
+                    league: 'please choose a league',
+                    chief_coach: ''
+                })
+            },
+            someOperationBeforeAdd: function () {
+                this.clearCoachInfo();
+                Vue.set(vm.info, 'cur_state', 'add');
+                $('.list-group-item').removeClass('active');
+            },
+            deleteOperation: function () {
+                var target = this.info.choosed_club;
+                $.ajax({
+                    url: '/modify/club',
+                    type: 'DELETE',
+                    dataType: 'JSON',
+                    data: {
+                        club_name: target.club_name
+                    },
+                    success: function () {
+                        // 删除俱乐部成功之后，这个
+                        // 由数据库来替我们做一些事情
+                        var index = -1;
+                        for (var i = 0; i < vm.club_list.length; i++) {
+                            if (vm.club_list[i] == target) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index != -1) {
+                            vm.club_list.splice(index, 1);
+                        }
+                        alert('Already delete club: ' + target.club_name);
+                        fetchCoachesWithClub();
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                })
+            },
+            coache_name_map_club(coach_name) {
+                for (var coach_with_club of this.coaches_with_club) {
+                    if (coach_with_club.coach_name == coach_name) {
+                        return coach_with_club.club.club_name;
+                    }
+                }
+                return '';
+            },
+            coache_name_map_country(coach_name) {
+                for (var coach_with_club of this.coaches_with_club) {
+                    if (coach_with_club.coach_name == coach_name) {
+                        return coach_with_club.country;
+                    }
+                }
+                return '';
+            },
+
+            deleteOperation: function () {
+                console.log('on delete operation');
+                var target = this.info.choosed_club;
+                console.log(target);
+                $.ajax({
+                    url: '/modify/club',
+                    type: 'DELETE',
+                    dataType: 'JSON',
+                    data: {
+                        club_name: target.club_name
+                    },
+                    success: function () {
+                        var index = -1;
+                        for (var i = 0; i < vm.club_list.length; i++) {
+                            if (vm.club_list[i] == target) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index != -1) {
+                            vm.club_list.splice(index, 1);
+                        }
+                        alert('Already delete club: ' + target.club_name);
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                })
+            },
+        }
+    });
+
+    $(function () {
+
+        $.get('/fetch/club_list').done(data => {
+            data.clubs.forEach(element => {
+                vm.club_list.push(element);
+            })
+        });
+
+        $.get('/fetch/leagues').done(function (data) {
+            vm.leagues.push('please choose a league')
+            console.log(data.leagues);
+            for (var league of data.leagues) {
+                vm.leagues.push(league.league_name);
+            }
+        });
+
+        fetchCoachesWithClub();
+
+    });
+
+    function fetchCoachesWithClub() {
+        $.get('/fetch/coaches_with_club').done(data => {
+            vm.coaches_with_club = [];
+            for (var element of data.coaches_with_club) {
+                if (element.club != null) {
+                    continue;
+                }
+                vm.coaches_with_club.push(element);
+            }
+            if (vm.coaches_with_club.length != 0) {
+                Vue.set(vm.info, 'modal_choosed_coach', vm.coaches_with_club[0].coach_name);
+            }
+            console.log('first coach: ' + JSON.stringify(vm.info.modal_choosed_coach));
+            console.log('fetch coaches with club done');
+
+            console.log(vm.coaches_with_club);
+        });
+    }
+
+
+
+
+
+    $(document).on('click', '.list-group-item', function () {
+        Vue.set(vm.info, 'cur_state', 'edit');
+        console.log('click');
+        $('.list-group-item').removeClass('active');
+        $(this).addClass('active');
+        // 获取选中的教练名字
+        var club_name = $(this).children('span:first-child').text();
+        console.log('pick name: ' + club_name);
+        //查找这个教练
+        for (var club of vm.club_list) {
+            if (club.club_name == club_name) {
+                console.log(club);
+                // Vue.set(vm.info, 'choosed_club', club);
+                vm.info.choosed_club = JSON.parse(JSON.stringify(club));
+                break;
+            }
+        }
+    });
+
+    $('#info-form').submit(function (e) {
+        var cur_state = vm.info.cur_state;
+        //what's this?
+        e.preventDefault();
+        var upload_data = {
+            club: {
+                club_name: $(this).find('input[name=club_name]').val(),
+                league: $(this).find('select[name=league]').val(),
+                chief_coach: $(this).find('label[name=coach_name]').text()
+            },
+            state: cur_state
+        }
+        console.log(JSON.stringify(upload_data));
+
+        var info = '';
+        if (upload_data.club.club_name.length == 0) {
+            info = info.concat('\nclub_name');
+        }
+        if (upload_data.club.league == 'please choose a league') {
+            info = info.concat('\nleague');
+        }
+
+        if (info.length != 0) {
+            alert(info.concat('\n为空，不合规定'));
+            return false;
+        }
+
+        $.post('/modify/club', upload_data).done(function (data) {
+            // 根据返回的东西确定这是不是个已存在的
+            //console.log(data.club);
+            var flag = 0;
+            console.log('club list length: ' + vm.club_list.length);
+            console.log(JSON.stringify(data));
+            for (var i = 0; i < vm.club_list.length; i++) {
+                if (vm.club_list[i].club_name == data.club.club_name) {
+                    // vm.club_list[i] = data.club;
+                    vm.club_list.splice(i, 1, data.club);
+                    flag = 1;
+                    break;
+                }
+            }
+
+            // 不存在则添加
+            if (!flag) {
+                vm.club_list.push(data.club);
+            }
+        }).fail(function (jqXHR, testStatus) {
+            alert('error: ' + jqXHR.status);
+        });
+        fetchCoachesWithClub();
+        return false;
+    });
+
+    $('#modal-submit-button').click(function () {
+        var choosed_coach = vm.info.modal_choosed_coach;
+        console.log(choosed_coach);
+
+        // Vue.set(vm.info.choosed_club, 'chief_coach', choosed_coach);
+        $(document).find('label[name=coach_name]').text(choosed_coach);
+        console.log(vm.club_list);
+    })
+
+
+
+</script>
+
+{% endblock %}

@@ -2,12 +2,6 @@ const path = require('path');
 const mime = require('mime');
 const fs = require('mz/fs');
 
-// staticFiles 是一个普通函数，它接收两个参数：URL 前缀和一个目录，
-// 然后返回一个async函数，这个async函数会判断当前的URL是否以指定的
-// 前缀开头，如果是，就把URL的路径视为文件，并发送文件内容，如果不是，
-// 这个async函数就不做任何事情，而是简单地调用await next() 让下一个
-// middleware去处理请求
-
 // url: like '/static/'
 // dir: like __dirname + '/static'
 function staticFiles(url, dir) {
