@@ -39,3 +39,5 @@
     ├── templating.js                   # nunjucks配置
     └── README.md
 
+## 数据文件
+包含在了仓库里：[链接](./data/dbc_design.sql)
